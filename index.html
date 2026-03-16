@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PokeStore TCG — Cartas Pokémon</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ENCABEZADO -->
+  <header>
+    <div class="header-inner">
+      <div class="logo">⚡ PokeStore TCG</div>
+      <button class="carrito-btn" onclick="toggleCarrito()">
+        🛒 Carrito <span class="carrito-count" id="carrito-count">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Cartas Pokémon TCG</h1>
+    <p>Coleccionables originales · Envío a toda Colombia · Paga por Nequi o Daviplata</p>
+  </section>
+
+  <!-- FILTROS -->
+  <section class="filtros">
+    <button class="filtro activo" onclick="filtrar('todos', this)">Todos</button>
+    <button class="filtro" onclick="filtrar('ex', this)">Pokémon ex</button>
+    <button class="filtro" onclick="filtrar('v', this)">Pokémon V</button>
+    <button class="filtro" onclick="filtrar('holo', this)">Holo Rare</button>
+    <button class="filtro" onclick="filtrar('basica', this)">Básicas</button>
+  </section>
+
+  <!-- CATÁLOGO DE CARTAS -->
+  <!-- ✏️ AQUÍ AGREGAS O EDITAS TUS CARTAS -->
+  <main class="catalogo" id="catalogo">
+
+    <div class="carta" data-categoria="ex">
+      <div class="carta-imagen">🔥</div>
+      <div class="carta-info">
+        <span class="carta-set">Obsidian Flames</span>
+        <h3>Charizard ex</h3>
+        <span class="carta-condicion nm">Near Mint</span>
+        <div class="carta-precio">$85.000</div>
+        <button class="btn-agregar" onclick="agregarAlCarrito('Charizard ex', 85000, 'Obsidian Flames')">
+          + Agregar
+        </button>
+      </div>
+    </div>
+
+    <div class="carta" data-categoria="ex">
+      <div class="carta-imagen">💧</div>
+      <div class="carta-info">
+        <span class="carta-set">Paldea Evolved</span>
+        <h3>Gardevoir ex</h3>
+        <span class="carta-condicion nm">Near Mint</span>
+        <div class="carta-precio">$42.000</div>
+        <button class="btn-agregar" onclick="agregarAlCarrito('Gardevoir ex', 42000, 'Paldea Evolved')">
+          + Agregar
+        </button>
+      </div>
+    </div>
+
+    <div class="carta" data-categoria="v">
+      <div class="carta-imagen">⚡</div>
+      <div class="carta-info">
+        <span class="carta-set">Brilliant Stars</span>
+        <h3>Pikachu VMAX</h3>
+        <span class="carta-condicion lp">Lightly Played</span>
+        <div class="carta-precio">$28.000</div>
+        <button class="btn-agregar" onclick="agregarAlCarrito('Pikachu VMAX', 28000, 'Brilliant Stars')">
+          + Agregar
+        </button>
+      </div>
+    </div>
+
+    <div class="carta" data-categoria="holo">
+      <div class="carta-imagen">🌿</div>
+      <div class="carta-info">
+        <span class="carta-set">Base Set</span>
+        <h3>Venusaur Holo</h3>
+        <span class="carta-condicion mp">Moderately Played</span>
+        <div class="carta-precio">$65.000</div>
+        <button class="btn-agregar" onclick="agregarAlCarrito('Venusaur Holo', 65000, 'Base Set')">
+          + Agregar
+        </button>
+      </div>
+    </div>
+
+    <div class="carta" data-categoria="ex">
+      <div class="carta-imagen">🌙</div>
+      <div class="carta-info">
+        <span class="carta-set">Temporal Forces</span>
+        <h3>Roaring Moon ex</h3>
+        <span class="carta-condicion nm">Near Mint</span>
+        <div class="carta-precio">$55.000</div>
+        <button class="btn-agregar" onclick="agregarAlCarrito('Roaring Moon ex', 55000, 'Temporal Forces')">
+          + Agregar
+        </button>
+      </div>
+    </div>
+
+    <div class="carta" data-categoria="basica">
+      <div class="carta-imagen">🟡</div>
+      <div class="carta-info">
+        <span class="carta-set">Scarlet & Violet</span>
+        <h3>Pikachu Básico</h3>
+        <span class="carta-condicion nm">Near Mint</span>
+        <div class="carta-precio">$8.000</div>
+        <button class="btn-agregar" onclick="agregarAlCarrito('Pikachu Básico', 8000, 'Scarlet & Violet')">
+          + Agregar
+        </button>
+      </div>
+    </div>
+
+  </main>
+  <!-- FIN DEL CATÁLOGO -->
+
+  <!-- PANEL DEL CARRITO -->
+  <div class="carrito-overlay" id="carrito-overlay" onclick="toggleCarrito()"></div>
+  <aside class="carrito-panel" id="carrito-panel">
+    <div class="carrito-header">
+      <h2>Tu pedido</h2>
+      <button onclick="toggleCarrito()">✕</button>
+    </div>
+    <div class="carrito-items" id="carrito-items">
+      <p class="carrito-vacio">Tu carrito está vacío</p>
+    </div>
+    <div class="carrito-footer" id="carrito-footer" style="display:none">
+      <div class="carrito-total">
+        Total: <strong id="carrito-total">$0</strong>
+      </div>
+      <button class="btn-whatsapp" onclick="enviarWhatsApp()">
+        📲 Pedir por WhatsApp
+      </button>
+      <button class="btn-vaciar" onclick="vaciarCarrito()">Vaciar carrito</button>
+    </div>
+  </aside>
+
+  <script src="script.js"></script>
+</body>
+</html>
