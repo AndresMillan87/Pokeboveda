@@ -6,212 +6,478 @@
   <title>Pokeboveda — Cartas Pokémon TCG</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --amarillo:#FFD700; --rojo:#E3350D;
+      --oscuro:#0d0d1a; --medio:#13132b;
+      --carta:#1a1a3a; --carta2:#20204a;
+      --blanco:#eeeef5; --gris:#7070a0;
+      --nm:#2ecc71; --lp:#f39c12; --mp:#e74c3c;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'DM Sans',sans-serif;background:var(--oscuro);color:var(--blanco);min-height:100vh;}
+
+    header{position:sticky;top:0;z-index:100;background:rgba(13,13,26,.97);backdrop-filter:blur(12px);border-bottom:2px solid var(--amarillo);}
+    .header-inner{max-width:1300px;margin:0 auto;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;}
+    .logo{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:3px;color:var(--amarillo);}
+    .carrito-btn{background:var(--amarillo);color:#0d0d1a;border:none;padding:10px 22px;border-radius:50px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:transform .2s,box-shadow .2s;}
+    .carrito-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(255,215,0,.35);}
+    .carrito-count{background:var(--rojo);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+
+    .hero{text-align:center;padding:56px 24px 36px;background:radial-gradient(ellipse at 50% 0%,#1e1e4a 0%,var(--oscuro) 70%);}
+    .hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,10vw,96px);letter-spacing:6px;color:var(--amarillo);line-height:1;margin-bottom:10px;text-shadow:0 0 60px rgba(255,215,0,.25);}
+    .hero p{color:var(--gris);font-size:14px;letter-spacing:1.5px;}
+
+    /* TABS EXPANSIÓN */
+    .expansiones-wrap{max-width:1300px;margin:0 auto;padding:28px 24px 0;}
+    .expansiones-label{font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;}
+    .expansiones-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;}
+    .expansiones-scroll::-webkit-scrollbar{display:none;}
+    .tab-exp{flex-shrink:0;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:8px 20px;border-radius:50px;cursor:pointer;border:2px solid rgba(255,215,0,.2);background:transparent;color:rgba(255,255,255,.6);transition:all .18s;white-space:nowrap;}
+    .tab-exp:hover{border-color:var(--amarillo);color:var(--amarillo);}
+    .tab-exp.activo{background:rgba(255,215,0,.15);border-color:var(--amarillo);color:var(--amarillo);font-weight:700;}
+
+    /* FILTROS */
+    .filtros-section{max-width:1300px;margin:0 auto;padding:16px 24px 0;}
+    .filtros-row{display:flex;gap:8px;flex-wrap:wrap;}
+    .f1{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:7px 18px;border-radius:50px;cursor:pointer;border:1.5px solid rgba(255,255,255,.15);background:transparent;color:rgba(255,255,255,.7);transition:all .18s;}
+    .f1:hover{border-color:var(--amarillo);color:var(--amarillo);}
+    .f1.activo{background:var(--amarillo);border-color:var(--amarillo);color:#0d0d1a;font-weight:700;}
+    .subtipo-wrap{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:10px;max-height:0;overflow:hidden;opacity:0;transition:max-height .3s,opacity .3s;}
+    .subtipo-wrap.visible{max-height:80px;opacity:1;}
+    .f2{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:5px 14px;border-radius:50px;cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.55);transition:all .18s;}
+    .f2:hover{border-color:rgba(255,215,0,.5);color:var(--amarillo);}
+    .f2.activo{background:rgba(255,215,0,.12);border-color:var(--amarillo);color:var(--amarillo);font-weight:700;}
+
+    /* ESTADO */
+    .estado{text-align:center;padding:60px 24px;color:var(--gris);font-size:16px;}
+    .spinner{width:40px;height:40px;border:3px solid rgba(255,215,0,.2);border-top-color:var(--amarillo);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .error-box{background:rgba(227,53,13,.1);border:1px solid rgba(227,53,13,.3);border-radius:12px;padding:20px;max-width:500px;margin:0 auto;color:#f0a090;line-height:1.7;}
+
+    /* CATÁLOGO */
+    .catalogo{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;max-width:1300px;margin:0 auto;padding:20px 24px 80px;}
+
+    /* CARTA — enlace que abre nueva pestaña */
+    .carta{background:var(--carta);border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.07);transition:transform .25s,box-shadow .25s;animation:fadeIn .35s ease both;cursor:pointer;text-decoration:none;display:block;color:inherit;}
+    .carta:hover{transform:translateY(-7px);box-shadow:0 16px 48px rgba(0,0,0,.5),0 0 0 1px rgba(255,215,0,.2);}
+    .carta.oculta{display:none;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+    .carta-img{height:190px;background:linear-gradient(135deg,var(--medio),var(--carta2));display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+    .carta-img img{width:100%;height:100%;object-fit:contain;padding:8px;transition:transform .3s;}
+    .carta:hover .carta-img img{transform:scale(1.05);}
+    .img-placeholder{font-size:48px;opacity:.2;}
+    .carta-badge{position:absolute;bottom:8px;left:8px;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:3px 10px;border-radius:50px;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);border:1px solid rgba(255,215,0,.3);color:var(--amarillo);}
+    .open-hint{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);border-radius:50px;padding:3px 9px;font-size:10px;color:rgba(255,255,255,.5);opacity:0;transition:opacity .2s;}
+    .carta:hover .open-hint{opacity:1;}
+
+    .carta-body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:5px;}
+    .carta-set{font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:1.2px;}
+    .carta-body h3{font-size:15px;font-weight:600;color:var(--blanco);line-height:1.2;}
+    .tipo-pill{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 9px;border-radius:50px;width:fit-content;background:rgba(255,215,0,.1);color:var(--amarillo);border:1px solid rgba(255,215,0,.2);}
+    .condicion{font-size:10px;font-weight:600;padding:2px 9px;border-radius:50px;width:fit-content;}
+    .nm{background:rgba(46,204,113,.15);color:var(--nm);}
+    .lp{background:rgba(243,156,18,.15);color:var(--lp);}
+    .mp{background:rgba(231,76,60,.15);color:var(--mp);}
+    .precio{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--amarillo);}
+    .ver-btn{width:100%;margin-top:4px;background:transparent;border:1.5px solid rgba(255,215,0,.35);color:var(--amarillo);padding:8px;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;text-align:center;transition:all .2s;}
+    .carta:hover .ver-btn{background:var(--amarillo);color:#0d0d1a;}
+
+    /* CARRITO */
+    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;}
+    .overlay.vis{display:block;}
+    .panel{position:fixed;top:0;right:-430px;width:420px;max-width:100vw;height:100vh;background:var(--medio);border-left:2px solid var(--amarillo);z-index:300;transition:right .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
+    .panel.open{right:0;}
+    .panel-head{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid rgba(255,255,255,.08);}
+    .panel-head h2{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--amarillo);}
+    .panel-head button{background:transparent;border:none;color:var(--blanco);font-size:20px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .2s;}
+    .panel-head button:hover{background:rgba(255,255,255,.1);}
+    .panel-items{flex:1;overflow-y:auto;padding:16px 24px;display:flex;flex-direction:column;gap:10px;}
+    .empty{color:var(--gris);text-align:center;margin-top:48px;font-size:15px;}
+    .ci{background:rgba(255,255,255,.04);border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid rgba(255,255,255,.06);}
+    .ci-name{font-weight:500;font-size:13px;line-height:1.3;}
+    .ci-set{font-size:11px;color:var(--gris);margin-top:2px;}
+    .ci-ctrl{display:flex;align-items:center;gap:8px;}
+    .ci-ctrl button{background:rgba(255,255,255,.1);border:none;color:var(--blanco);width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+    .ci-ctrl button:hover{background:rgba(255,215,0,.3);}
+    .ci-qty{min-width:20px;text-align:center;font-weight:600;}
+    .ci-price{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--amarillo);white-space:nowrap;}
+    .panel-foot{padding:18px 24px;border-top:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:10px;}
+    .total-row{display:flex;justify-content:space-between;align-items:baseline;}
+    .total-row span{font-size:15px;color:var(--gris);}
+    .total-row strong{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--amarillo);}
+    .btn-wa{background:#25D366;color:#fff;border:none;padding:16px;border-radius:12px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:16px;cursor:pointer;transition:transform .2s,box-shadow .2s;}
+    .btn-wa:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(37,211,102,.4);}
+    .btn-clear{background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--gris);padding:9px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;transition:all .2s;}
+    .btn-clear:hover{border-color:var(--mp);color:var(--mp);}
+
+    @media(max-width:640px){
+      .catalogo{grid-template-columns:repeat(2,1fr);gap:12px;padding:12px 12px 80px;}
+      .panel{width:100vw;}
+      .hero h1{font-size:52px;}
+    }
+  </style>
 </head>
 <body>
 
-  <header>
-    <div class="header-inner">
-      <div class="logo">⚡ Pokeboveda</div>
-      <button class="carrito-btn" onclick="toggleCarrito()">
-        🛒 Carrito <span class="carrito-count" id="carrito-count">0</span>
-      </button>
-    </div>
-  </header>
+<header>
+  <div class="header-inner">
+    <div class="logo">⚡ Pokeboveda</div>
+    <button class="carrito-btn" onclick="toggleCarrito()">
+      🛒 Carrito <span class="carrito-count" id="cnt">0</span>
+    </button>
+  </div>
+</header>
 
-  <section class="hero">
-    <h1>Pokeboveda TCG</h1>
-    <p>Cartas originales · Envío a toda Colombia · Paga por Nequi o Daviplata</p>
-  </section>
+<section class="hero">
+  <h1>Pokeboveda TCG</h1>
+  <p>Cartas originales · Envío a toda Colombia · Paga por Nequi o Daviplata</p>
+</section>
 
-  <!-- FILTRO NIVEL 1: TIPO DE CARTA -->
-  <section class="filtros-wrapper">
-    <div class="filtros-nivel1">
-      <button class="filtro-tipo activo" data-tipo="todos" onclick="seleccionarTipo('todos', this)">Todos</button>
-      <button class="filtro-tipo" data-tipo="pokemon" onclick="seleccionarTipo('pokemon', this)">Pokémon</button>
-      <button class="filtro-tipo" data-tipo="ex" onclick="seleccionarTipo('ex', this)">Pokémon ex</button>
-      <button class="filtro-tipo" data-tipo="item" onclick="seleccionarTipo('item', this)">Item</button>
-      <button class="filtro-tipo" data-tipo="supporter" onclick="seleccionarTipo('supporter', this)">Supporter</button>
-      <button class="filtro-tipo" data-tipo="estadio" onclick="seleccionarTipo('estadio', this)">Estadio</button>
-      <button class="filtro-tipo" data-tipo="tool" onclick="seleccionarTipo('tool', this)">Tool</button>
-      <button class="filtro-tipo" data-tipo="energia" onclick="seleccionarTipo('energia', this)">Energía</button>
-    </div>
-    <!-- FILTRO NIVEL 2: aparece al elegir tipo -->
-    <div class="filtros-nivel2" id="filtros-nivel2"></div>
-  </section>
+<div class="expansiones-wrap">
+  <div class="expansiones-label">Expansión</div>
+  <div class="expansiones-scroll" id="tabs-exp">
+    <div class="spinner" style="margin:0;width:24px;height:24px;border-width:2px;"></div>
+  </div>
+</div>
 
-  <!-- CATÁLOGO -->
-  <main class="catalogo" id="catalogo">
+<div class="filtros-section">
+  <div class="filtros-row">
+    <button class="f1 activo" onclick="elegirTipo('todos',this)">Todos</button>
+    <button class="f1" onclick="elegirTipo('pokemon',this)">Pokémon</button>
+    <button class="f1" onclick="elegirTipo('ex',this)">Pokémon EX / ex</button>
+    <button class="f1" onclick="elegirTipo('item',this)">Item</button>
+    <button class="f1" onclick="elegirTipo('supporter',this)">Supporter</button>
+    <button class="f1" onclick="elegirTipo('estadio',this)">Estadio</button>
+    <button class="f1" onclick="elegirTipo('tool',this)">Tool</button>
+    <button class="f1" onclick="elegirTipo('energia',this)">Energía</button>
+  </div>
+  <div class="subtipo-wrap" id="subtipo-wrap"></div>
+</div>
 
-    <div class="carta" data-tipo="ex" data-subtipo="full-art">
-      <div class="carta-imagen">🔥</div>
-      <div class="carta-info">
-        <span class="carta-set">Obsidian Flames</span>
-        <h3>Charizard ex</h3>
-        <div class="carta-tags">
-          <span class="tag tipo-tag">Pokémon ex</span>
-          <span class="tag subtipo-tag">Full Art</span>
-        </div>
-        <span class="carta-condicion nm">Near Mint</span>
-        <div class="carta-precio">$85.000</div>
-        <button class="btn-agregar" onclick="agregarAlCarrito('Charizard ex', 85000, 'Obsidian Flames')">+ Agregar</button>
+<div id="contenedor-catalogo">
+  <div class="estado"><div class="spinner"></div><p>Cargando catálogo...</p></div>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleCarrito()"></div>
+<aside class="panel" id="panel">
+  <div class="panel-head"><h2>Tu pedido</h2><button onclick="toggleCarrito()">✕</button></div>
+  <div class="panel-items" id="panel-items"><p class="empty">Tu carrito está vacío</p></div>
+  <div class="panel-foot" id="panel-foot" style="display:none">
+    <div class="total-row"><span>Total</span><strong id="total-val">$0</strong></div>
+    <button class="btn-wa" onclick="enviarWA()">📲 Pedir por WhatsApp</button>
+    <button class="btn-clear" onclick="vaciar()">Vaciar carrito</button>
+  </div>
+</aside>
+
+<script>
+// ============================================================
+// ✏️ CONFIGURACIÓN — solo cambia estos dos valores
+// ============================================================
+const WA_NUM  = "573112345678";
+const SHEET_ID = "TU_SHEET_ID_AQUI";
+// ============================================================
+
+const SUBTIPOS_POR_TIPO = {
+  pokemon:   ['Normal','Holo','Reverse Holo','Full Art','Special Art','Rainbow','Gold'],
+  ex:        ['Holo','Full Art','Special Art','Hyper Rare','Rainbow','Gold'],
+  item:      ['Normal','Reverse Holo','Full Art','Gold'],
+  supporter: ['Normal','Reverse Holo','Full Art','Special Art','Gold'],
+  estadio:   ['Normal','Reverse Holo','Full Art'],
+  tool:      ['Normal','Reverse Holo','Full Art','Gold'],
+  energia:   ['Normal','Especial','Rainbow','Gold'],
+};
+
+const TIPO_LABELS = {
+  pokemon:'Pokémon', ex:'Pokémon EX/ex',
+  item:'Item', supporter:'Supporter',
+  estadio:'Estadio', tool:'Tool', energia:'Energía'
+};
+
+const COND_LABELS = {nm:'Near Mint',lp:'Lightly Played',mp:'Moderately Played'};
+
+let expansiones     = {};
+let expansionActiva = 'todas';
+let tipoActivo      = 'todos';
+let subActivo       = 'todos';
+let cartasActuales  = [];
+let carrito         = [];
+
+// ── Cargar todas las pestañas ──
+async function cargarTodo() {
+  try {
+    // Obtener GIDs de cada pestaña via gviz
+    const gvizUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+    const resp    = await fetch(gvizUrl);
+    const texto   = await resp.text();
+
+    // Extraer pares {gid, nombre} de la respuesta
+    const pestañas = [];
+    const sheetMatches = [...texto.matchAll(/"sheetId":(\d+).*?"title":"([^"]+)"/g)];
+    if (sheetMatches.length) {
+      sheetMatches.forEach(m => pestañas.push({ gid: m[1], nombre: m[2] }));
+    } else {
+      // Fallback: solo la hoja 0
+      pestañas.push({ gid: '0', nombre: 'Catálogo' });
+    }
+
+    const resultados = await Promise.all(pestañas.map(p => cargarPestana(p.gid, p.nombre)));
+    resultados.forEach(({ nombre, cartas }) => {
+      if (cartas.length > 0) expansiones[nombre] = cartas;
+    });
+
+    if (!Object.keys(expansiones).length) throw new Error('No se encontraron cartas en el Sheets.');
+
+    renderTabs();
+    mostrarExpansion('todas');
+
+  } catch (err) {
+    document.getElementById('tabs-exp').innerHTML = '';
+    document.getElementById('contenedor-catalogo').innerHTML = `
+      <div class="estado"><div class="error-box">
+        <strong>No se pudo cargar el catálogo</strong><br><br>
+        ${err.message}<br><br>
+        Asegúrate de que el <strong>SHEET_ID</strong> sea correcto y de que el Sheets esté publicado en la web
+        (Archivo → Compartir → Publicar en la web).
+      </div></div>`;
+  }
+}
+
+async function cargarPestana(gid, nombre) {
+  try {
+    const url  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`;
+    const resp = await fetch(url);
+    if (!resp.ok) return { nombre, cartas: [] };
+    const filas = parsearCSV(await resp.text());
+    if (filas.length < 2) return { nombre, cartas: [] };
+
+    const headers = filas[0].map(h => h.trim().toLowerCase().replace(/ /g,'_'));
+    const datos   = filas.slice(1).filter(f => f.some(c => c.trim()));
+    const cartas  = await Promise.all(datos.map(f => enriquecerCarta(f, headers, nombre)));
+    return { nombre, cartas: cartas.filter(c => c && c.precio > 0) };
+  } catch { return { nombre, cartas: [] }; }
+}
+
+function parsearCSV(texto) {
+  return texto.trim().split('\n').map(linea => {
+    const cols = []; let actual = '', dentro = false;
+    for (const c of linea) {
+      if (c === '"') dentro = !dentro;
+      else if (c === ',' && !dentro) { cols.push(actual.trim()); actual = ''; }
+      else actual += c;
+    }
+    cols.push(actual.trim());
+    return cols;
+  });
+}
+
+async function enriquecerCarta(fila, headers, expansion) {
+  const get = col => { const i = headers.indexOf(col); return i >= 0 ? (fila[i]||'').trim() : ''; };
+
+  const cardId    = get('card_id');
+  const precio    = parseInt(get('precio').replace(/\D/g,'')) || 0;
+  const condicion = get('condicion').toLowerCase() || 'nm';
+  const nCustom   = get('nombre_custom');
+  const tCustom   = get('tipo_custom').toLowerCase();
+  const sCustom   = get('subtipo_custom').toLowerCase().replace(/ /g,'-');
+
+  let nombre = nCustom || cardId;
+  let imagen = null, set = expansion, rareza = '', supertype = tCustom || 'pokemon', subtipo = sCustom;
+
+  if (cardId) {
+    try {
+      const r = await fetch(`https://api.pokemontcg.io/v2/cards/${cardId}`);
+      if (r.ok) {
+        const d = (await r.json()).data;
+        nombre  = nCustom || d.name;
+        imagen  = d.images?.large || d.images?.small || null;
+        set     = d.set?.name || expansion;
+        rareza  = d.rarity || '';
+
+        if (!tCustom) {
+          const st   = (d.supertype || '').toLowerCase();
+          const subs = (d.subtypes  || []).map(s => s.toLowerCase());
+          // EX y ex van juntos bajo el mismo tipo 'ex'
+          if (subs.some(s => ['ex','gx','vmax','v','vstar'].includes(s))) supertype = 'ex';
+          else if (st === 'trainer') {
+            if      (subs.includes('supporter'))                        supertype = 'supporter';
+            else if (subs.includes('stadium'))                          supertype = 'estadio';
+            else if (subs.includes('tool') || subs.includes('pokémon tool')) supertype = 'tool';
+            else                                                        supertype = 'item';
+          }
+          else if (st === 'energy') supertype = 'energia';
+          else supertype = 'pokemon';
+        }
+
+        if (!sCustom) {
+          const r2 = rareza.toLowerCase();
+          if      (r2.includes('rainbow'))              subtipo = 'rainbow';
+          else if (r2.includes('gold'))                 subtipo = 'gold';
+          else if (r2.includes('special illustration')) subtipo = 'special-art';
+          else if (r2.includes('full art'))             subtipo = 'full-art';
+          else if (r2.includes('hyper'))                subtipo = 'hyper-rare';
+          else if (r2.includes('reverse'))              subtipo = 'reverse-holo';
+          else if (r2.includes('holo'))                 subtipo = 'holo';
+          else if (r2.includes('special energy'))       subtipo = 'especial';
+          else                                          subtipo = 'normal';
+        }
+      }
+    } catch {}
+  }
+
+  return { cardId, nombre, imagen, set, expansion, precio, condicion, supertype, subtipo, rareza };
+}
+
+// ── Tabs ──
+function renderTabs() {
+  document.getElementById('tabs-exp').innerHTML =
+    `<button class="tab-exp activo" onclick="mostrarExpansion('todas',this)">Todas</button>` +
+    Object.keys(expansiones).map(n =>
+      `<button class="tab-exp" onclick="mostrarExpansion('${n}',this)">${n}</button>`
+    ).join('');
+}
+
+function mostrarExpansion(exp, btn) {
+  expansionActiva = exp;
+  tipoActivo = 'todos'; subActivo = 'todos';
+  document.querySelectorAll('.tab-exp').forEach(b => b.classList.remove('activo'));
+  if (btn) btn.classList.add('activo');
+  document.querySelectorAll('.f1').forEach((b,i) => b.classList.toggle('activo', i===0));
+  document.getElementById('subtipo-wrap').classList.remove('visible');
+
+  cartasActuales = exp === 'todas'
+    ? Object.values(expansiones).flat()
+    : (expansiones[exp] || []);
+
+  renderCatalogo(cartasActuales);
+}
+
+// ── Catálogo ──
+function renderCatalogo(cartas) {
+  const filtradas = cartas.filter(c => {
+    const okT = tipoActivo === 'todos' || c.supertype === tipoActivo;
+    const okS = subActivo  === 'todos' || c.subtipo   === subActivo;
+    return okT && okS;
+  });
+
+  if (!filtradas.length) {
+    document.getElementById('contenedor-catalogo').innerHTML =
+      '<div class="estado"><p>No hay cartas con ese filtro.</p></div>';
+    return;
+  }
+
+  document.getElementById('contenedor-catalogo').innerHTML =
+    `<div class="catalogo">` +
+    filtradas.map((c, i) => {
+      const p = new URLSearchParams({ id: c.cardId, exp: c.expansion, precio: c.precio, condicion: c.condicion });
+      return `
+        <a class="carta" href="carta.html?${p}" target="_blank" rel="noopener"
+           style="animation-delay:${i*.03}s">
+          <div class="carta-img">
+            ${c.imagen
+              ? `<img src="${c.imagen}" alt="${c.nombre}" loading="lazy">`
+              : `<span class="img-placeholder">🃏</span>`}
+            <span class="carta-badge">${subLabel(c.subtipo)}</span>
+            <span class="open-hint">↗ Ver detalle</span>
+          </div>
+          <div class="carta-body">
+            <span class="carta-set">${c.set}</span>
+            <h3>${c.nombre}</h3>
+            <span class="tipo-pill">${TIPO_LABELS[c.supertype]||c.supertype}</span>
+            <span class="condicion ${c.condicion}">${COND_LABELS[c.condicion]||c.condicion}</span>
+            <div class="precio">${fmt(c.precio)}</div>
+            <div class="ver-btn">Ver detalles ↗</div>
+          </div>
+        </a>`;
+    }).join('') + `</div>`;
+}
+
+// ── Filtros ──
+function elegirTipo(tipo, btn) {
+  tipoActivo = tipo; subActivo = 'todos';
+  document.querySelectorAll('.f1').forEach(b => b.classList.remove('activo'));
+  btn.classList.add('activo');
+  const wrap = document.getElementById('subtipo-wrap');
+  if (tipo === 'todos') {
+    wrap.classList.remove('visible'); wrap.innerHTML = '';
+  } else {
+    const ops = SUBTIPOS_POR_TIPO[tipo] || [];
+    wrap.innerHTML =
+      '<span style="font-size:11px;color:var(--gris);letter-spacing:1px;text-transform:uppercase;margin-right:4px;">Variante:</span>' +
+      '<button class="f2 activo" onclick="elegirSub(\'todos\',this)">Todas</button>' +
+      ops.map(o => `<button class="f2" onclick="elegirSub('${slug(o)}',this)">${o}</button>`).join('');
+    setTimeout(() => wrap.classList.add('visible'), 10);
+  }
+  renderCatalogo(cartasActuales);
+}
+
+function elegirSub(sub, btn) {
+  subActivo = sub;
+  document.querySelectorAll('.f2').forEach(b => b.classList.remove('activo'));
+  btn.classList.add('activo');
+  renderCatalogo(cartasActuales);
+}
+
+function slug(s) { return s.toLowerCase().replace(/ /g,'-'); }
+function subLabel(s) {
+  return {'normal':'Normal','holo':'Holo','reverse-holo':'Reverse Holo','full-art':'Full Art',
+    'special-art':'Special Art','hyper-rare':'Hyper Rare','rainbow':'Rainbow','gold':'Gold','especial':'Especial'}[s]||s;
+}
+function fmt(v) { return '$'+v.toLocaleString('es-CO'); }
+
+// ── Carrito ──
+function cargarCarrito() {
+  try { carrito = JSON.parse(sessionStorage.getItem('carrito')||'[]'); } catch { carrito=[]; }
+  renderCarrito();
+}
+function guardarCarrito() { sessionStorage.setItem('carrito', JSON.stringify(carrito)); }
+
+function cambiar(id, d) {
+  const item = carrito.find(i => i.id === id);
+  if (!item) return;
+  item.cantidad += d;
+  if (item.cantidad <= 0) carrito = carrito.filter(i => i.id !== id);
+  guardarCarrito(); renderCarrito();
+}
+
+function renderCarrito() {
+  const items = document.getElementById('panel-items');
+  const foot  = document.getElementById('panel-foot');
+  document.getElementById('cnt').textContent = carrito.reduce((a,i) => a+i.cantidad, 0);
+  if (!carrito.length) { items.innerHTML='<p class="empty">Tu carrito está vacío</p>'; foot.style.display='none'; return; }
+  items.innerHTML = carrito.map(i => `
+    <div class="ci">
+      <div><div class="ci-name">${i.nombre}</div><div class="ci-set">${i.variante} · ${i.condicion.toUpperCase()}</div></div>
+      <div class="ci-ctrl">
+        <button onclick="cambiar('${i.id}',-1)">−</button>
+        <span class="ci-qty">${i.cantidad}</span>
+        <button onclick="cambiar('${i.id}',+1)">+</button>
       </div>
-    </div>
+      <div class="ci-price">${fmt(i.precio*i.cantidad)}</div>
+    </div>`).join('');
+  const total = carrito.reduce((a,i) => a+i.precio*i.cantidad, 0);
+  document.getElementById('total-val').textContent = fmt(total);
+  foot.style.display = 'flex';
+}
 
-    <div class="carta" data-tipo="ex" data-subtipo="holo">
-      <div class="carta-imagen">💧</div>
-      <div class="carta-info">
-        <span class="carta-set">Paldea Evolved</span>
-        <h3>Gardevoir ex</h3>
-        <div class="carta-tags">
-          <span class="tag tipo-tag">Pokémon ex</span>
-          <span class="tag subtipo-tag">Holo</span>
-        </div>
-        <span class="carta-condicion nm">Near Mint</span>
-        <div class="carta-precio">$42.000</div>
-        <button class="btn-agregar" onclick="agregarAlCarrito('Gardevoir ex', 42000, 'Paldea Evolved')">+ Agregar</button>
-      </div>
-    </div>
+function toggleCarrito() {
+  document.getElementById('panel').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('vis');
+}
+function vaciar() { carrito=[]; guardarCarrito(); renderCarrito(); }
 
-    <div class="carta" data-tipo="pokemon" data-subtipo="reverse-holo">
-      <div class="carta-imagen">⚡</div>
-      <div class="carta-info">
-        <span class="carta-set">Brilliant Stars</span>
-        <h3>Pikachu</h3>
-        <div class="carta-tags">
-          <span class="tag tipo-tag">Pokémon</span>
-          <span class="tag subtipo-tag">Reverse Holo</span>
-        </div>
-        <span class="carta-condicion lp">Lightly Played</span>
-        <div class="carta-precio">$12.000</div>
-        <button class="btn-agregar" onclick="agregarAlCarrito('Pikachu', 12000, 'Brilliant Stars')">+ Agregar</button>
-      </div>
-    </div>
+function enviarWA() {
+  if (!carrito.length) return;
+  const total = carrito.reduce((a,i) => a+i.precio*i.cantidad, 0);
+  let msg = '¡Hola! Quiero hacer el siguiente pedido:\n\n';
+  carrito.forEach(i => { msg+=`• ${i.cantidad}x ${i.nombre} — ${i.variante} — ${i.condicion.toUpperCase()} — ${fmt(i.precio*i.cantidad)}\n`; });
+  msg += `\n*Total: ${fmt(total)}*\n\n¿Cómo coordino el pago?`;
+  window.open(`https://wa.me/${WA_NUM}?text=${encodeURIComponent(msg)}`,'_blank');
+}
 
-    <div class="carta" data-tipo="pokemon" data-subtipo="normal">
-      <div class="carta-imagen">🌿</div>
-      <div class="carta-info">
-        <span class="carta-set">Base Set</span>
-        <h3>Venusaur</h3>
-        <div class="carta-tags">
-          <span class="tag tipo-tag">Pokémon</span>
-          <span class="tag subtipo-tag">Normal</span>
-        </div>
-        <span class="carta-condicion mp">Moderately Played</span>
-        <div class="carta-precio">$18.000</div>
-        <button class="btn-agregar" onclick="agregarAlCarrito('Venusaur', 18000, 'Base Set')">+ Agregar</button>
-      </div>
-    </div>
-
-    <div class="carta" data-tipo="ex" data-subtipo="special-art">
-      <div class="carta-imagen">🌙</div>
-      <div class="carta-info">
-        <span class="carta-set">Temporal Forces</span>
-        <h3>Roaring Moon ex</h3>
-        <div class="carta-tags">
-          <span class="tag tipo-tag">Pokémon ex</span>
-          <span class="tag subtipo-tag">Special Art</span>
-        </div>
-        <span class="carta-condicion nm">Near Mint</span>
-        <div class="carta-precio">$55.000</div>
-        <button class="btn-agregar" onclick="agregarAlCarrito('Roaring Moon ex', 55000, 'Temporal Forces')">+ Agregar</button>
-      </div>
-    </div>
-
-    <div class="carta" data-tipo="supporter" data-subtipo="full-art">
-      <div class="carta-imagen">👩‍🔬</div>
-      <div class="carta-info">
-        <span class="carta-set">Scarlet & Violet</span>
-        <h3>Profesora Sada</h3>
-        <div class="carta-tags">
-          <span class="tag tipo-tag">Supporter</span>
-          <span class="tag subtipo-tag">Full Art</span>
-        </div>
-        <span class="carta-condicion nm">Near Mint</span>
-        <div class="carta-precio">$22.000</div>
-        <button class="btn-agregar" onclick="agregarAlCarrito('Profesora Sada', 22000, 'Scarlet & Violet')">+ Agregar</button>
-      </div>
-    </div>
-
-    <div class="carta" data-tipo="item" data-subtipo="normal">
-      <div class="carta-imagen">🎒</div>
-      <div class="carta-info">
-        <span class="carta-set">Sword & Shield</span>
-        <h3>Ultra Ball</h3>
-        <div class="carta-tags">
-          <span class="tag tipo-tag">Item</span>
-          <span class="tag subtipo-tag">Normal</span>
-        </div>
-        <span class="carta-condicion nm">Near Mint</span>
-        <div class="carta-precio">$5.000</div>
-        <button class="btn-agregar" onclick="agregarAlCarrito('Ultra Ball', 5000, 'Sword & Shield')">+ Agregar</button>
-      </div>
-    </div>
-
-    <div class="carta" data-tipo="energia" data-subtipo="especial">
-      <div class="carta-imagen">✨</div>
-      <div class="carta-info">
-        <span class="carta-set">Lost Origin</span>
-        <h3>Energía Prisma</h3>
-        <div class="carta-tags">
-          <span class="tag tipo-tag">Energía</span>
-          <span class="tag subtipo-tag">Especial</span>
-        </div>
-        <span class="carta-condicion nm">Near Mint</span>
-        <div class="carta-precio">$9.000</div>
-        <button class="btn-agregar" onclick="agregarAlCarrito('Energía Prisma', 9000, 'Lost Origin')">+ Agregar</button>
-      </div>
-    </div>
-
-    <div class="carta" data-tipo="estadio" data-subtipo="normal">
-      <div class="carta-imagen">🏟️</div>
-      <div class="carta-info">
-        <span class="carta-set">Paldea Evolved</span>
-        <h3>Mesagoza</h3>
-        <div class="carta-tags">
-          <span class="tag tipo-tag">Estadio</span>
-          <span class="tag subtipo-tag">Normal</span>
-        </div>
-        <span class="carta-condicion nm">Near Mint</span>
-        <div class="carta-precio">$7.000</div>
-        <button class="btn-agregar" onclick="agregarAlCarrito('Mesagoza', 7000, 'Paldea Evolved')">+ Agregar</button>
-      </div>
-    </div>
-
-    <div class="carta" data-tipo="tool" data-subtipo="normal">
-      <div class="carta-imagen">🔧</div>
-      <div class="carta-info">
-        <span class="carta-set">Scarlet & Violet</span>
-        <h3>Choice Belt</h3>
-        <div class="carta-tags">
-          <span class="tag tipo-tag">Tool</span>
-          <span class="tag subtipo-tag">Normal</span>
-        </div>
-        <span class="carta-condicion nm">Near Mint</span>
-        <div class="carta-precio">$6.000</div>
-        <button class="btn-agregar" onclick="agregarAlCarrito('Choice Belt', 6000, 'Scarlet & Violet')">+ Agregar</button>
-      </div>
-    </div>
-
-  </main>
-
-  <!-- CARRITO -->
-  <div class="carrito-overlay" id="carrito-overlay" onclick="toggleCarrito()"></div>
-  <aside class="carrito-panel" id="carrito-panel">
-    <div class="carrito-header">
-      <h2>Tu pedido</h2>
-      <button onclick="toggleCarrito()">✕</button>
-    </div>
-    <div class="carrito-items" id="carrito-items">
-      <p class="carrito-vacio">Tu carrito está vacío</p>
-    </div>
-    <div class="carrito-footer" id="carrito-footer" style="display:none">
-      <div class="carrito-total">Total: <strong id="carrito-total">$0</strong></div>
-      <button class="btn-whatsapp" onclick="enviarWhatsApp()">📲 Pedir por WhatsApp</button>
-      <button class="btn-vaciar" onclick="vaciarCarrito()">Vaciar carrito</button>
-    </div>
-  </aside>
-
-  <script src="script.js"></script>
+cargarCarrito();
+cargarTodo();
+</script>
 </body>
 </html>
