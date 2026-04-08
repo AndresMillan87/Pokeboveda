@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root {
+    :root{
       --amarillo:#FFD700; --rojo:#E3350D;
       --oscuro:#0d0d1a; --medio:#13132b;
       --carta:#1a1a3a; --carta2:#20204a;
@@ -28,7 +28,7 @@
     .hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,10vw,96px);letter-spacing:6px;color:var(--amarillo);line-height:1;margin-bottom:10px;text-shadow:0 0 60px rgba(255,215,0,.25);}
     .hero p{color:var(--gris);font-size:14px;letter-spacing:1.5px;}
 
-    /* TABS EXPANSIÓN */
+    /* EXPANSIONES */
     .expansiones-wrap{max-width:1300px;margin:0 auto;padding:28px 24px 0;}
     .expansiones-label{font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;}
     .expansiones-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;}
@@ -58,24 +58,33 @@
     /* CATÁLOGO */
     .catalogo{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;max-width:1300px;margin:0 auto;padding:20px 24px 80px;}
 
-    /* CARTA — enlace que abre nueva pestaña */
-    .carta{background:var(--carta);border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.07);transition:transform .25s,box-shadow .25s;animation:fadeIn .35s ease both;cursor:pointer;text-decoration:none;display:block;color:inherit;}
+    .carta{background:var(--carta);border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.07);transition:transform .25s,box-shadow .25s;animation:fadeIn .35s ease both;cursor:pointer;text-decoration:none;display:block;color:inherit;position:relative;}
     .carta:hover{transform:translateY(-7px);box-shadow:0 16px 48px rgba(0,0,0,.5),0 0 0 1px rgba(255,215,0,.2);}
     .carta.oculta{display:none;}
+    .carta.sin-stock{opacity:.5;pointer-events:none;}
     @keyframes fadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 
     .carta-img{height:190px;background:linear-gradient(135deg,var(--medio),var(--carta2));display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
     .carta-img img{width:100%;height:100%;object-fit:contain;padding:8px;transition:transform .3s;}
     .carta:hover .carta-img img{transform:scale(1.05);}
     .img-placeholder{font-size:48px;opacity:.2;}
-    .carta-badge{position:absolute;bottom:8px;left:8px;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:3px 10px;border-radius:50px;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);border:1px solid rgba(255,215,0,.3);color:var(--amarillo);}
-    .open-hint{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);border-radius:50px;padding:3px 9px;font-size:10px;color:rgba(255,255,255,.5);opacity:0;transition:opacity .2s;}
+
+    /* Badge rareza (arriba izquierda) */
+    .badge-rareza{position:absolute;bottom:8px;left:8px;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:3px 10px;border-radius:50px;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);border:1px solid rgba(255,215,0,.3);color:var(--amarillo);}
+
+    /* Badge stock (arriba derecha) */
+    .badge-stock{position:absolute;top:8px;right:8px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:50px;backdrop-filter:blur(4px);}
+    .badge-stock.ok{background:rgba(46,204,113,.2);border:1px solid rgba(46,204,113,.4);color:var(--nm);}
+    .badge-stock.bajo{background:rgba(243,156,18,.2);border:1px solid rgba(243,156,18,.4);color:var(--lp);}
+    .badge-stock.agotado{background:rgba(227,53,13,.2);border:1px solid rgba(227,53,13,.4);color:var(--rojo);}
+
+    /* Hint */
+    .open-hint{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.6);border-radius:50px;padding:3px 9px;font-size:10px;color:rgba(255,255,255,.5);opacity:0;transition:opacity .2s;}
     .carta:hover .open-hint{opacity:1;}
 
     .carta-body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:5px;}
     .carta-set{font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:1.2px;}
     .carta-body h3{font-size:15px;font-weight:600;color:var(--blanco);line-height:1.2;}
-    .tipo-pill{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 9px;border-radius:50px;width:fit-content;background:rgba(255,215,0,.1);color:var(--amarillo);border:1px solid rgba(255,215,0,.2);}
     .condicion{font-size:10px;font-weight:600;padding:2px 9px;border-radius:50px;width:fit-content;}
     .nm{background:rgba(46,204,113,.15);color:var(--nm);}
     .lp{background:rgba(243,156,18,.15);color:var(--lp);}
@@ -173,14 +182,15 @@
 
 <script>
 // ============================================================
-// ✏️ CONFIGURACIÓN — solo cambia estos dos valores
+// ✏️ CONFIGURACIÓN
 // ============================================================
-const WA_NUM  = "573112345678";
-const SHEET_ID = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwRy-rl7K2dMWgyHonm_Kky6OCw7aChuPzQLtKudd2rarCDDYqCw8pon6LFTFunCWo0JdiTOnxkM_g/pubhtml";
+const WA_NUM   = "+573028678267";  // Tu número con código de país
+const SHEET_ID = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQM1CG1V5_ljvPcwpnrfEawccvKZja5P_n4tHdwgiH1k3Fvbg-Vg3xdunP1_1psq8TFasW5ulv_NHBU/pubhtml"; // ID de tu Google Sheets
 // ============================================================
 
+// Subtipos disponibles por tipo de carta (para el filtro nivel 2)
 const SUBTIPOS_POR_TIPO = {
-  pokemon:   ['Normal','Holo','Reverse Holo','Full Art','Special Art','Rainbow','Gold'],
+  pokemon:   ['Normal','Holo','Reverse Holo'],
   ex:        ['Holo','Full Art','Special Art','Hyper Rare','Rainbow','Gold'],
   item:      ['Normal','Reverse Holo','Full Art','Gold'],
   supporter: ['Normal','Reverse Holo','Full Art','Special Art','Gold'],
@@ -189,13 +199,24 @@ const SUBTIPOS_POR_TIPO = {
   energia:   ['Normal','Especial','Rainbow','Gold'],
 };
 
+const COND_LABELS = {nm:'Near Mint', lp:'Lightly Played', mp:'Moderately Played'};
 const TIPO_LABELS = {
-  pokemon:'Pokémon', ex:'Pokémon EX/ex',
-  item:'Item', supporter:'Supporter',
-  estadio:'Estadio', tool:'Tool', energia:'Energía'
+  pokemon:'Pokémon', ex:'Pokémon EX/ex', item:'Item',
+  supporter:'Supporter', estadio:'Estadio', tool:'Tool', energia:'Energía'
 };
 
-const COND_LABELS = {nm:'Near Mint',lp:'Lightly Played',mp:'Moderately Played'};
+// Mapeo de rareza a subtipo para el filtro
+const RAREZA_A_SUBTIPO = {
+  'rainbow rare':'rainbow', 'rainbow':'rainbow',
+  'gold':'gold', 'gold rare':'gold',
+  'special illustration rare':'special-art',
+  'illustration rare':'special-art',
+  'full art':'full-art', 'full art rare':'full-art',
+  'hyper rare':'hyper-rare',
+  'holo rare':'holo', 'rare holo':'holo', 'holo':'holo',
+  'reverse holofoil':'reverse-holo', 'reverse holo':'reverse-holo',
+  'special energy':'especial',
+};
 
 let expansiones     = {};
 let expansionActiva = 'todas';
@@ -204,30 +225,30 @@ let subActivo       = 'todos';
 let cartasActuales  = [];
 let carrito         = [];
 
-// ── Cargar todas las pestañas ──
+// ── Cargar todo ──
 async function cargarTodo() {
   try {
-    // Obtener GIDs de cada pestaña via gviz
     const gvizUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
     const resp    = await fetch(gvizUrl);
     const texto   = await resp.text();
 
-    // Extraer pares {gid, nombre} de la respuesta
+    // Extraer pestañas del Sheets
     const pestañas = [];
-    const sheetMatches = [...texto.matchAll(/"sheetId":(\d+).*?"title":"([^"]+)"/g)];
-    if (sheetMatches.length) {
-      sheetMatches.forEach(m => pestañas.push({ gid: m[1], nombre: m[2] }));
+    const matches  = [...texto.matchAll(/"sheetId":(\d+).*?"title":"([^"]+)"/g)];
+    if (matches.length) {
+      matches.forEach(m => pestañas.push({ gid: m[1], nombre: m[2] }));
     } else {
-      // Fallback: solo la hoja 0
       pestañas.push({ gid: '0', nombre: 'Catálogo' });
     }
 
+    // Cargar cada pestaña en paralelo
     const resultados = await Promise.all(pestañas.map(p => cargarPestana(p.gid, p.nombre)));
     resultados.forEach(({ nombre, cartas }) => {
       if (cartas.length > 0) expansiones[nombre] = cartas;
     });
 
-    if (!Object.keys(expansiones).length) throw new Error('No se encontraron cartas en el Sheets.');
+    if (!Object.keys(expansiones).length)
+      throw new Error('No se encontraron cartas. Revisa que el Sheets tenga datos y esté publicado.');
 
     renderTabs();
     mostrarExpansion('todas');
@@ -236,27 +257,106 @@ async function cargarTodo() {
     document.getElementById('tabs-exp').innerHTML = '';
     document.getElementById('contenedor-catalogo').innerHTML = `
       <div class="estado"><div class="error-box">
-        <strong>No se pudo cargar el catálogo</strong><br><br>
+        <strong>❌ No se pudo cargar el catálogo</strong><br><br>
         ${err.message}<br><br>
-        Asegúrate de que el <strong>SHEET_ID</strong> sea correcto y de que el Sheets esté publicado en la web
-        (Archivo → Compartir → Publicar en la web).
+        <strong>Pasos para solucionarlo:</strong><br>
+        1. Verifica que el <code>SHEET_ID</code> sea correcto<br>
+        2. En Google Sheets → Archivo → Compartir → Publicar en la web → Publicar<br>
+        3. Asegúrate de que los encabezados sean exactamente:
+        <code>nombre, card_id, rareza, condicion, precio, stock</code>
       </div></div>`;
   }
 }
 
+// ── Cargar una pestaña ──
 async function cargarPestana(gid, nombre) {
   try {
     const url  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`;
     const resp = await fetch(url);
     if (!resp.ok) return { nombre, cartas: [] };
+
     const filas = parsearCSV(await resp.text());
     if (filas.length < 2) return { nombre, cartas: [] };
 
-    const headers = filas[0].map(h => h.trim().toLowerCase().replace(/ /g,'_'));
-    const datos   = filas.slice(1).filter(f => f.some(c => c.trim()));
-    const cartas  = await Promise.all(datos.map(f => enriquecerCarta(f, headers, nombre)));
-    return { nombre, cartas: cartas.filter(c => c && c.precio > 0) };
-  } catch { return { nombre, cartas: [] }; }
+    // Validar encabezados
+    const headers = filas[0].map(h => h.trim().toLowerCase());
+    // Columnas requeridas
+    const requeridas = ['nombre', 'card_id', 'rareza', 'condicion', 'precio', 'stock'];
+    const faltantes  = requeridas.filter(r => !headers.includes(r));
+    if (faltantes.length) {
+      console.warn(`Pestaña "${nombre}": faltan columnas: ${faltantes.join(', ')}`);
+    }
+
+    const datos = filas.slice(1).filter(f => f.some(c => c.trim()));
+    const cartas = await Promise.all(datos.map(f => procesarFila(f, headers, nombre)));
+    return { nombre, cartas: cartas.filter(c => c !== null) };
+
+  } catch (e) {
+    console.error(`Error cargando pestaña ${nombre}:`, e);
+    return { nombre, cartas: [] };
+  }
+}
+
+// ── Procesar cada fila del Sheets ──
+async function procesarFila(fila, headers, expansion) {
+  const get = col => {
+    const i = headers.indexOf(col);
+    return i >= 0 ? (fila[i] || '').trim() : '';
+  };
+
+  // Leer exactamente las 6 columnas definidas
+  const nombre    = get('nombre');
+  const cardId    = get('card_id');
+  const rareza    = get('rareza');
+  const condicion = get('condicion').toLowerCase() || 'nm';
+  const precio    = parseInt(get('precio').replace(/\D/g, '')) || 0;
+  const stock     = parseInt(get('stock')) || 0;
+
+  // Si no hay nombre ni card_id, ignorar la fila
+  if (!nombre && !cardId) return null;
+  // Si precio es 0, probablemente es una fila vacía
+  if (precio === 0) return null;
+
+  // Determinar subtipo desde la rareza del Sheets
+  const rarLower = rareza.toLowerCase();
+  let subtipo = 'normal';
+  for (const [key, val] of Object.entries(RAREZA_A_SUBTIPO)) {
+    if (rarLower.includes(key)) { subtipo = val; break; }
+  }
+
+  // Valores por defecto antes de llamar la API
+  let imagen    = null;
+  let set       = expansion;
+  let supertype = 'pokemon';
+
+  // Enriquecer con datos de la API (imagen y tipo de carta)
+  if (cardId) {
+    try {
+      const r = await fetch(`https://api.pokemontcg.io/v2/cards/${cardId}`);
+      if (r.ok) {
+        const d = (await r.json()).data;
+        imagen  = d.images?.large || d.images?.small || null;
+        set     = d.set?.name || expansion;
+
+        // Detectar el tipo para los filtros
+        const st   = (d.supertype || '').toLowerCase();
+        const subs = (d.subtypes  || []).map(s => s.toLowerCase());
+        if (subs.some(s => ['ex','gx','vmax','v','vstar'].includes(s))) supertype = 'ex';
+        else if (st === 'trainer') {
+          if      (subs.includes('supporter'))                          supertype = 'supporter';
+          else if (subs.includes('stadium'))                            supertype = 'estadio';
+          else if (subs.includes('tool')||subs.includes('pokémon tool'))supertype = 'tool';
+          else                                                          supertype = 'item';
+        }
+        else if (st === 'energy') supertype = 'energia';
+        else supertype = 'pokemon';
+      }
+    } catch (e) {
+      console.warn(`No se pudo obtener datos de API para ${cardId}`);
+    }
+  }
+
+  return { nombre, cardId, rareza, condicion, precio, stock, imagen, set, expansion, supertype, subtipo };
 }
 
 function parsearCSV(texto) {
@@ -272,64 +372,7 @@ function parsearCSV(texto) {
   });
 }
 
-async function enriquecerCarta(fila, headers, expansion) {
-  const get = col => { const i = headers.indexOf(col); return i >= 0 ? (fila[i]||'').trim() : ''; };
-
-  const cardId    = get('card_id');
-  const precio    = parseInt(get('precio').replace(/\D/g,'')) || 0;
-  const condicion = get('condicion').toLowerCase() || 'nm';
-  const nCustom   = get('nombre_custom');
-  const tCustom   = get('tipo_custom').toLowerCase();
-  const sCustom   = get('subtipo_custom').toLowerCase().replace(/ /g,'-');
-
-  let nombre = nCustom || cardId;
-  let imagen = null, set = expansion, rareza = '', supertype = tCustom || 'pokemon', subtipo = sCustom;
-
-  if (cardId) {
-    try {
-      const r = await fetch(`https://api.pokemontcg.io/v2/cards/${cardId}`);
-      if (r.ok) {
-        const d = (await r.json()).data;
-        nombre  = nCustom || d.name;
-        imagen  = d.images?.large || d.images?.small || null;
-        set     = d.set?.name || expansion;
-        rareza  = d.rarity || '';
-
-        if (!tCustom) {
-          const st   = (d.supertype || '').toLowerCase();
-          const subs = (d.subtypes  || []).map(s => s.toLowerCase());
-          // EX y ex van juntos bajo el mismo tipo 'ex'
-          if (subs.some(s => ['ex','gx','vmax','v','vstar'].includes(s))) supertype = 'ex';
-          else if (st === 'trainer') {
-            if      (subs.includes('supporter'))                        supertype = 'supporter';
-            else if (subs.includes('stadium'))                          supertype = 'estadio';
-            else if (subs.includes('tool') || subs.includes('pokémon tool')) supertype = 'tool';
-            else                                                        supertype = 'item';
-          }
-          else if (st === 'energy') supertype = 'energia';
-          else supertype = 'pokemon';
-        }
-
-        if (!sCustom) {
-          const r2 = rareza.toLowerCase();
-          if      (r2.includes('rainbow'))              subtipo = 'rainbow';
-          else if (r2.includes('gold'))                 subtipo = 'gold';
-          else if (r2.includes('special illustration')) subtipo = 'special-art';
-          else if (r2.includes('full art'))             subtipo = 'full-art';
-          else if (r2.includes('hyper'))                subtipo = 'hyper-rare';
-          else if (r2.includes('reverse'))              subtipo = 'reverse-holo';
-          else if (r2.includes('holo'))                 subtipo = 'holo';
-          else if (r2.includes('special energy'))       subtipo = 'especial';
-          else                                          subtipo = 'normal';
-        }
-      }
-    } catch {}
-  }
-
-  return { cardId, nombre, imagen, set, expansion, precio, condicion, supertype, subtipo, rareza };
-}
-
-// ── Tabs ──
+// ── Tabs de expansión ──
 function renderTabs() {
   document.getElementById('tabs-exp').innerHTML =
     `<button class="tab-exp activo" onclick="mostrarExpansion('todas',this)">Todas</button>` +
@@ -343,7 +386,7 @@ function mostrarExpansion(exp, btn) {
   tipoActivo = 'todos'; subActivo = 'todos';
   document.querySelectorAll('.tab-exp').forEach(b => b.classList.remove('activo'));
   if (btn) btn.classList.add('activo');
-  document.querySelectorAll('.f1').forEach((b,i) => b.classList.toggle('activo', i===0));
+  document.querySelectorAll('.f1').forEach((b,i) => b.classList.toggle('activo', i === 0));
   document.getElementById('subtipo-wrap').classList.remove('visible');
 
   cartasActuales = exp === 'todas'
@@ -353,7 +396,14 @@ function mostrarExpansion(exp, btn) {
   renderCatalogo(cartasActuales);
 }
 
-// ── Catálogo ──
+// ── Renderizar catálogo ──
+function stockBadge(stock) {
+  if (stock <= 0)  return `<span class="badge-stock agotado">Agotado</span>`;
+  if (stock === 1) return `<span class="badge-stock bajo">Último</span>`;
+  if (stock <= 3)  return `<span class="badge-stock bajo">${stock} disponibles</span>`;
+  return `<span class="badge-stock ok">${stock} en stock</span>`;
+}
+
 function renderCatalogo(cartas) {
   const filtradas = cartas.filter(c => {
     const okT = tipoActivo === 'todos' || c.supertype === tipoActivo;
@@ -370,24 +420,33 @@ function renderCatalogo(cartas) {
   document.getElementById('contenedor-catalogo').innerHTML =
     `<div class="catalogo">` +
     filtradas.map((c, i) => {
-      const p = new URLSearchParams({ id: c.cardId, exp: c.expansion, precio: c.precio, condicion: c.condicion });
+      const p = new URLSearchParams({
+        id:       c.cardId,
+        nombre:   c.nombre,
+        rareza:   c.rareza,
+        condicion:c.condicion,
+        precio:   c.precio,
+        stock:    c.stock,
+        exp:      c.expansion
+      });
+      const sinStock = c.stock <= 0;
       return `
-        <a class="carta" href="carta.html?${p}" target="_blank" rel="noopener"
+        <a class="carta${sinStock?' sin-stock':''}"
+           href="carta.html?${p}" target="_blank" rel="noopener"
            style="animation-delay:${i*.03}s">
           <div class="carta-img">
             ${c.imagen
               ? `<img src="${c.imagen}" alt="${c.nombre}" loading="lazy">`
               : `<span class="img-placeholder">🃏</span>`}
-            <span class="carta-badge">${subLabel(c.subtipo)}</span>
-            <span class="open-hint">↗ Ver detalle</span>
+            <span class="badge-rareza">${c.rareza || 'Normal'}</span>
+            ${stockBadge(c.stock)}
           </div>
           <div class="carta-body">
             <span class="carta-set">${c.set}</span>
             <h3>${c.nombre}</h3>
-            <span class="tipo-pill">${TIPO_LABELS[c.supertype]||c.supertype}</span>
-            <span class="condicion ${c.condicion}">${COND_LABELS[c.condicion]||c.condicion}</span>
+            <span class="condicion ${c.condicion}">${COND_LABELS[c.condicion] || c.condicion}</span>
             <div class="precio">${fmt(c.precio)}</div>
-            <div class="ver-btn">Ver detalles ↗</div>
+            <div class="ver-btn">${sinStock ? 'Sin stock' : 'Ver detalles ↗'}</div>
           </div>
         </a>`;
     }).join('') + `</div>`;
@@ -419,16 +478,12 @@ function elegirSub(sub, btn) {
   renderCatalogo(cartasActuales);
 }
 
-function slug(s) { return s.toLowerCase().replace(/ /g,'-'); }
-function subLabel(s) {
-  return {'normal':'Normal','holo':'Holo','reverse-holo':'Reverse Holo','full-art':'Full Art',
-    'special-art':'Special Art','hyper-rare':'Hyper Rare','rainbow':'Rainbow','gold':'Gold','especial':'Especial'}[s]||s;
-}
-function fmt(v) { return '$'+v.toLocaleString('es-CO'); }
+function slug(s) { return s.toLowerCase().replace(/ /g, '-'); }
+function fmt(v)  { return '$' + v.toLocaleString('es-CO'); }
 
 // ── Carrito ──
 function cargarCarrito() {
-  try { carrito = JSON.parse(sessionStorage.getItem('carrito')||'[]'); } catch { carrito=[]; }
+  try { carrito = JSON.parse(sessionStorage.getItem('carrito') || '[]'); } catch { carrito = []; }
   renderCarrito();
 }
 function guardarCarrito() { sessionStorage.setItem('carrito', JSON.stringify(carrito)); }
@@ -444,19 +499,25 @@ function cambiar(id, d) {
 function renderCarrito() {
   const items = document.getElementById('panel-items');
   const foot  = document.getElementById('panel-foot');
-  document.getElementById('cnt').textContent = carrito.reduce((a,i) => a+i.cantidad, 0);
-  if (!carrito.length) { items.innerHTML='<p class="empty">Tu carrito está vacío</p>'; foot.style.display='none'; return; }
+  document.getElementById('cnt').textContent = carrito.reduce((a, i) => a + i.cantidad, 0);
+  if (!carrito.length) {
+    items.innerHTML = '<p class="empty">Tu carrito está vacío</p>';
+    foot.style.display = 'none'; return;
+  }
   items.innerHTML = carrito.map(i => `
     <div class="ci">
-      <div><div class="ci-name">${i.nombre}</div><div class="ci-set">${i.variante} · ${i.condicion.toUpperCase()}</div></div>
+      <div>
+        <div class="ci-name">${i.nombre}</div>
+        <div class="ci-set">${i.rareza} · ${(i.condicion||'').toUpperCase()}</div>
+      </div>
       <div class="ci-ctrl">
         <button onclick="cambiar('${i.id}',-1)">−</button>
         <span class="ci-qty">${i.cantidad}</span>
         <button onclick="cambiar('${i.id}',+1)">+</button>
       </div>
-      <div class="ci-price">${fmt(i.precio*i.cantidad)}</div>
+      <div class="ci-price">${fmt(i.precio * i.cantidad)}</div>
     </div>`).join('');
-  const total = carrito.reduce((a,i) => a+i.precio*i.cantidad, 0);
+  const total = carrito.reduce((a, i) => a + i.precio * i.cantidad, 0);
   document.getElementById('total-val').textContent = fmt(total);
   foot.style.display = 'flex';
 }
@@ -465,15 +526,17 @@ function toggleCarrito() {
   document.getElementById('panel').classList.toggle('open');
   document.getElementById('overlay').classList.toggle('vis');
 }
-function vaciar() { carrito=[]; guardarCarrito(); renderCarrito(); }
+function vaciar() { carrito = []; guardarCarrito(); renderCarrito(); }
 
 function enviarWA() {
   if (!carrito.length) return;
-  const total = carrito.reduce((a,i) => a+i.precio*i.cantidad, 0);
+  const total = carrito.reduce((a, i) => a + i.precio * i.cantidad, 0);
   let msg = '¡Hola! Quiero hacer el siguiente pedido:\n\n';
-  carrito.forEach(i => { msg+=`• ${i.cantidad}x ${i.nombre} — ${i.variante} — ${i.condicion.toUpperCase()} — ${fmt(i.precio*i.cantidad)}\n`; });
+  carrito.forEach(i => {
+    msg += `• ${i.cantidad}x ${i.nombre} — ${i.rareza} — ${(i.condicion||'').toUpperCase()} — ${fmt(i.precio * i.cantidad)}\n`;
+  });
   msg += `\n*Total: ${fmt(total)}*\n\n¿Cómo coordino el pago?`;
-  window.open(`https://wa.me/${WA_NUM}?text=${encodeURIComponent(msg)}`,'_blank');
+  window.open(`https://wa.me/${WA_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 cargarCarrito();
